@@ -11,7 +11,7 @@ Write C using Urdu-script keywords. `urduc-tool` rewrites Urdu tokens (`عدد`,
 }
 ```
 ```bash
-./build/urduc-tool hello_urdu.c -o hello && ./hello
+./build/urduc-tool examples/hello.c -o hello && ./hello
 ```
 
 ## What it is
