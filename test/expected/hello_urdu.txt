@@ -1,0 +1,2 @@
+!السلام علیکم، دنیا
+Hello World from Urdu-Clang!

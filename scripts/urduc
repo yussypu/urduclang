@@ -1,0 +1,75 @@
+#!/bin/bash
+# urduc - Urdu C Compiler Wrapper
+# اردو سی کمپائلر
+#
+# Usage: urduc <source.c> [-o output] [options]
+# استعمال: urduc <source.c> [-o output] [options]
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_DIR="${SCRIPT_DIR}/../build"
+PLUGIN_NAME="UrduClang.so"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+print_usage() {
+    echo "اردو-کلینگ (Urdu-Clang)"
+    echo ""
+    echo "استعمال / Usage:"
+    echo "  urduc <source.c> [-o output] [options]"
+    echo ""
+    echo "مثالیں / Examples:"
+    echo "  urduc hello.c              # Compile hello.c"
+    echo "  urduc hello.c -o hello     # Compile to 'hello'"
+    echo "  urduc -E hello.c           # Preprocess only (show C)"
+    echo ""
+    echo "اختیارات / Options:"
+    echo "  -E          Show preprocessed C (no compile)"
+    echo "  -o <file>   Output file name"
+    echo "  -v          Verbose output"
+    echo "  --help      Show this help"
+    echo ""
+}
+
+# Check for help
+if [[ "$1" == "--help" ]] || [[ "$1" == "-help" ]] || [[ "$1" == "-h" ]]; then
+    print_usage
+    exit 0
+fi
+
+# Check for arguments
+if [[ $# -lt 1 ]]; then
+    print_usage
+    exit 1
+fi
+
+# Try to find the standalone tool first
+URDUC_TOOL="${PLUGIN_DIR}/urduc-tool"
+if [[ -x "$URDUC_TOOL" ]]; then
+    exec "$URDUC_TOOL" "$@"
+fi
+
+# Fall back to plugin mode
+PLUGIN_PATH="${PLUGIN_DIR}/${PLUGIN_NAME}"
+if [[ ! -f "$PLUGIN_PATH" ]]; then
+    # Try system-wide installation
+    PLUGIN_PATH="/usr/local/lib/${PLUGIN_NAME}"
+fi
+
+if [[ ! -f "$PLUGIN_PATH" ]]; then
+    echo -e "${RED}خطا: پلگ ان نہیں ملا${NC}"
+    echo "Error: Plugin not found at $PLUGIN_PATH"
+    echo ""
+    echo "Please build the project first:"
+    echo "  mkdir build && cd build"
+    echo "  cmake .. && make"
+    exit 1
+fi
+
+# Run clang with our plugin
+exec clang -fplugin="$PLUGIN_PATH" "$@"

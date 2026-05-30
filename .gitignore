@@ -1,0 +1,19 @@
+# Build output
+/build/
+*.o
+*.so
+*.dylib
+
+# Compiled test/scratch binaries (no extension, next to their .c)
+/hello
+/fib
+/a.out
+
+# Generated transformed sources
+*_transformed.c
+
+# Editor / OS cruft
+.DS_Store
+.cache/
+.vscode/
+compile_commands.json
